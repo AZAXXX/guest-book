@@ -23,6 +23,7 @@ class GuestBook extends Model
 
     public function guest()
     {
+        return $this->belongsTo(\App\Models\Guest::class);
         return $this->belongsTo(User::class, 'guest_id');
     }
     public function host(): BelongsTo
@@ -39,4 +40,6 @@ class GuestBook extends Model
     {
         return $this->belongsToMany(Guest::class, 'guest_book_guest', 'guest_book_id', 'guest_id');
     }
+
+
 }

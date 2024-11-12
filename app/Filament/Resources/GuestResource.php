@@ -17,6 +17,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use function Laravel\Prompts\text;
+
 class GuestResource extends Resource
 {
     protected static ?string $model = Guest::class;
@@ -27,6 +29,7 @@ class GuestResource extends Resource
     {
         return $form
             ->schema([
+            TextInput::make('guest_id')->required(),
             TextInput::make('name')->required(),
             TextInput::make('email')->email()->required(),
             TextInput::make('phone')->required(),
@@ -42,6 +45,7 @@ class GuestResource extends Resource
     {
         return $table
             ->columns([
+            TextColumn::make('id')->searchable(),
             TextColumn::make('name')
                 ->label('Name')
                 ->sortable()

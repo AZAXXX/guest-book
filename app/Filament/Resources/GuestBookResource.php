@@ -35,7 +35,6 @@ class GuestBookResource extends Resource
                 Select::make('guest_id')
                     ->relationship(name: 'guest', titleAttribute: 'name')
                     ->createOptionForm([
-                        TextInput::make('guest_id')->required(),
                         TextInput::make('name')->required(),
                         TextInput::make('email')->email()->required(),
                         TextInput::make('phone')->required(),
@@ -69,6 +68,7 @@ class GuestBookResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('guest_id'),
                 TextColumn::make('host.name')
                     ->label('Host')
                     ->sortable()
