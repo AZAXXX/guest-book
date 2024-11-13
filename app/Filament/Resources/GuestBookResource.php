@@ -2,31 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\GuestBookResource\Pages;
-use App\Filament\Resources\GuestBookResource\RelationManagers;
-use App\Models\GuestBook;
 use Filament\Forms;
+use Filament\Tables;
 use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
+use App\Models\GuestBook;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DateTimePicker;
 
-use function Laravel\Prompts\text;
+use App\Filament\Resources\GuestBookResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\GuestBookResource\RelationManagers;
+use App\Models\Guest;
 
 class GuestBookResource extends Resource
 {
     protected static ?string $model = GuestBook::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     public static function form(Form $form): Form
     {
@@ -42,9 +44,16 @@ class GuestBookResource extends Resource
                         TextInput::make('organization')->required(),
                         TextInput::make('identity_id')->required(),
                         FileUpload::make('identity_file')->disk('public')->directory('identities'),
-                        TextInput::make('guest_token')->required(),
+                        // TextInput::make('guest_token')->required(),
 
-                    ]),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        // Generate guest token
+                        $data['guest_token'] = Str::random(8);
+                
+                        // Return data yang sudah dimodifikasi
+                        return Guest::create($data)->getKey();
+                    }),
                 Select::make('host_id')
                     ->relationship('host', 'name')
                     ->required(),
@@ -55,7 +64,9 @@ class GuestBookResource extends Resource
                 DateTimePicker::make('check_in')->required(),
                 DateTimePicker::make('check_out')->required(),
                 Select::make('status')
-                    ->options([
+                ->default('pending')
+                ->visible(fn () => Auth::check() && Auth::user()->hasRole('Super Admin'))
+                ->options([
                         'pending' => 'Pending',
                         'approved' => 'Approved',
                         'declined' => 'Declined',

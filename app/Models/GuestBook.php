@@ -21,6 +21,10 @@ class GuestBook extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'pending'
+    ];
+
     public function guest()
     {
         return $this->belongsTo(\App\Models\Guest::class);
