@@ -11,18 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guest_book', function (Blueprint $table) {
+        Schema::create('guest_books', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('host_id')->constrained('hosts')->onDelete('cascade');
-            $table->foreignId('organization_id')->constrained('organizations')->onDelete('cascade');
+            $table->unsignedBigInteger('host_id');
+            $table->unsignedBigInteger('organization_id');
             $table->text('needs');
             $table->dateTime('check_in');
             $table->dateTime('check_out');
-            $table->string('status', ['pending', 'approved', 'declined'])->default('pending');
+            $table->string('status')->default('process');
             $table->timestamps();
+
+            // Foreign key constraints
+            $table->foreign('host_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+
         });
-        
-        
     }
 
     /**

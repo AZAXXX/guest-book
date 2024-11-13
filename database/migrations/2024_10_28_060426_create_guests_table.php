@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('guest_token');
             $table->timestamps();
         });
-        
+
     }
 
     /**
